@@ -28,6 +28,7 @@ public class Car {
     public int seats;
     public String url;
     public boolean soldByDealer;
+    public boolean carSold;
     public String otherInfo;
     
     public Car() {
@@ -91,7 +92,10 @@ public class Car {
 
                 }
             } catch (NullPointerException e) {
-                System.out.println("Error fetching car data for: " + url);
+                if (page.select("div.expired-ad-container") != null) {
+                    carSold = true;
+                    System.out.println("Car at " + url + " was sold!");
+                }
             }
             //assignOverviewArrayData(carData); 
             
@@ -123,7 +127,6 @@ public class Car {
             if (e instanceof org.jsoup.HttpStatusException) {
                 //error 404, car was sold
                 failed = false;
-                throw new CarSoldException("Car was sold");
             } else {
                 System.out.println("Couldn't connect to website, retrying...");
                 failed = true;
