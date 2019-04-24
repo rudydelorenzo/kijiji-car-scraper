@@ -50,48 +50,50 @@ public class Car {
         
         try {
             Document page = Jsoup.connect(url).userAgent("Mozilla/17.0").get();
+            try {
+                Element attributesBox = page.getElementById("AttributeList");
 
-            Element attributesBox = page.getElementById("AttributeList");
-            
-            Elements attributeLists = attributesBox.getElementsByTag("ul");
-            
-            ArrayList<String> carData = new ArrayList();
-            this.url = url;
-            
-            System.out.println("-------------------------------");
-            
-            for (Element currentList : attributeLists) {
-                for (Element currentElement : currentList.getElementsByTag("li")) {
-                    if (currentElement.getElementsByTag("span").isEmpty()) {
-                        String attribute;
-                        String value;
-                        try {
-                            attribute = currentElement.getElementsByTag("dt").first().text();
-                        } catch (NullPointerException e) {
-                            attribute = "N/A";
+                Elements attributeLists = attributesBox.getElementsByTag("ul");
+
+                ArrayList<String> carData = new ArrayList();
+                this.url = url;
+
+                System.out.println("-------------------------------");
+
+                for (Element currentList : attributeLists) {
+                    for (Element currentElement : currentList.getElementsByTag("li")) {
+                        if (currentElement.getElementsByTag("span").isEmpty()) {
+                            String attribute;
+                            String value;
+                            try {
+                                attribute = currentElement.getElementsByTag("dt").first().text();
+                            } catch (NullPointerException e) {
+                                attribute = "N/A";
+                            }
+                            try {
+                                value = currentElement.getElementsByTag("dd").first().text();
+                            } catch (NullPointerException e) {
+                                value = "N/A";
+                            }
+                            //carData.add(currentElement.getElementsByTag("td").first().text());
+                            System.out.println(attribute + " : " + value);
+                        } else {
+                            //includes stuff
+                            String value;
+                            try {
+                                value = currentElement.getElementsByTag("span").first().text();
+                            } catch (NullPointerException e) {
+                                value = "N/A";
+                            }
+                            System.out.println("INCLUDES : " + value);
                         }
-                        try {
-                            value = currentElement.getElementsByTag("dd").first().text();
-                        } catch (NullPointerException e) {
-                            value = "N/A";
-                        }
-                        //carData.add(currentElement.getElementsByTag("td").first().text());
-                        System.out.println(attribute + " : " + value);
-                    } else {
-                        //includes stuff
-                        String value;
-                        try {
-                            value = currentElement.getElementsByTag("span").first().text();
-                        } catch (NullPointerException e) {
-                            value = "N/A";
-                        }
-                        System.out.println("INCLUDES : " + value);
                     }
-                }
-                
-            }
 
-            //assignOverviewArrayData(carData);
+                }
+            } catch (NullPointerException e) {
+                System.out.println("Error fetching car data for: " + url);
+            }
+            //assignOverviewArrayData(carData); 
             
             //gotta change up how values are assigned. attribute and value will get fed into a method with a ton of if statements.
             
