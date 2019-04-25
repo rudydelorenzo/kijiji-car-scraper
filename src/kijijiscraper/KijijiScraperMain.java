@@ -17,41 +17,15 @@ public class KijijiScraperMain {
     public static String filename = "linkskijiji.txt";
             
     public static void main(String[] args) {
-        try {
-            String protocol = new URL(URL).getProtocol();
-            String hostname = new URL(URL).getHost();
-            
-            try {
-                Document page = Jsoup.connect(URL).userAgent("Mozilla/17.0").get();
+        
+        getLinksFromURL(URL);
+        
+        saveToTextfile(resultLinks);
 
-                Element resultsContainer = page.getElementsByClass("container-results large-images").first();
+        String[] arguments = {filename};
 
-                Elements resultDivs = resultsContainer.getElementsByTag("div");
-                for (int i = 0; i<resultDivs.size(); i++) {
-                    if (!resultDivs.get(i).className().contains("regular-ad") || !resultDivs.get(i).className().contains("search-item")) {
-                        resultDivs.remove(i);
-                        i--;
-                    }
-                }
-                for (Element currentResult : resultDivs) {
-                    resultLinks.add((protocol + "://" + hostname + currentResult.attr("data-vip-url")));
-                }
-                
-                saveToTextfile(resultLinks);
-                
-                String[] arguments = {filename};
-                
-                InfoScraper.main(arguments);
-                
-                //System.out.println(resultDivs.size());
-            } catch (IOException e) {
-                System.out.println("An error occurred, most likely page didn't connect.");
-            }
-            
-        } catch (MalformedURLException e) {
-            System.out.println("Bad URL.");
-        }
-            
+        InfoScraper.main(arguments);
+
     }
     
     public static void saveToTextfile(ArrayList<String> links) {
@@ -68,5 +42,45 @@ public class KijijiScraperMain {
         }
 
     }
-    
+
+    public static void getLinksFromURL(String url) {
+        try {
+            String protocol = new URL(URL).getProtocol();
+            String hostname = new URL(URL).getHost();
+            try {
+                Document page = Jsoup.connect(url).userAgent("Mozilla/17.0").get();
+
+                Element resultsContainer = page.getElementsByClass("container-results large-images").first();
+
+                Elements resultDivs = resultsContainer.getElementsByTag("div");
+                for (int i = 0; i<resultDivs.size(); i++) {
+                    if (!resultDivs.get(i).className().contains("regular-ad") || !resultDivs.get(i).className().contains("search-item")) {
+                        resultDivs.remove(i);
+                        i--;
+                    }
+                }
+                for (Element currentResult : resultDivs) {
+                    resultLinks.add((protocol + "://" + hostname + currentResult.attr("data-vip-url")));
+                }
+                
+                //if there is a next, click it and scrape web
+                Element pagination = page.getElementsByClass("bottom-bar").first().getElementsByClass("pagination").first();
+                Element nextLink = pagination.getElementsByAttributeValue("title", "Next").first();
+                
+                if (nextLink != null) {
+                    String nextPage = nextLink.attr("href");
+                    nextPage = protocol + "://" + hostname + nextPage;
+                    //System.out.println(nextPage);
+                    getLinksFromURL(nextPage);
+                }
+                
+                
+            } catch (IOException e) {
+                System.out.println("An error occurred, most likely page didn't connect.");
+            }
+            
+        } catch (MalformedURLException e) {
+            System.out.println("Bad URL.");
+        }
+    }
 }
