@@ -13,10 +13,7 @@ public class InfoScraper {
     
     public static void main(String[] args) {
         
-        //args[0] = "links.txt";
-        
-        //final ArrayList<String> URLs = loadURLFile(args[0]);
-        final ArrayList<String> URLs = loadURLFile("linkskijiji.txt");
+        final ArrayList<String> URLs = loadURLFile(args[0]);
         ArrayList<Thread> threadList = new ArrayList();
         
         for (int i = 0; i<URLs.size(); i++) {
@@ -34,9 +31,8 @@ public class InfoScraper {
             threadList.get(i).start();
         }
         
-        while (allThreadsDone(threadList)) {
-            
-        }
+        //holds up on saving until all threads are done :)
+        while (allThreadsDone(threadList)) {}
         
         saveCarsCSV("carskijiji.csv");
         
@@ -64,18 +60,23 @@ public class InfoScraper {
 
             for (int i = 0; i < carsList.size(); i++) {
                 //the next lines are customized for whatever data you are getting.
+                //add CSVSAFE method to any strings
                 String toSave = "";
-                toSave = carsList.get(i).condition;
-                toSave += "," + carsList.get(i).make;
-                toSave += "," + carsList.get(i).model;
-                toSave += "," + carsList.get(i).year;
-                toSave += "," + carsList.get(i).trim;
-                toSave += "," + carsList.get(i).kilometers;
-                toSave += "," + carsList.get(i).body;
-                toSave += "," + carsList.get(i).color;
+                toSave = "" + carsList.get(i).year;
+                toSave += "," + csvSafe(carsList.get(i).condition);
+                toSave += "," + csvSafe(carsList.get(i).make);
+                toSave += "," + csvSafe(carsList.get(i).model);
+                toSave += "," + csvSafe(carsList.get(i).trim);
+                toSave += "," + csvSafe(carsList.get(i).body);
+                toSave += "," + csvSafe(carsList.get(i).color);
                 toSave += "," + carsList.get(i).seats;
+                toSave += "," + carsList.get(i).kilometers;
+                toSave += "," + csvSafe(carsList.get(i).transmission);
+                toSave += "," + csvSafe(carsList.get(i).fuelType);
                 toSave += "," + carsList.get(i).price;
-                
+                toSave += "," + carsList.get(i).soldByDealer;
+                toSave += "," + csvSafe(carsList.get(i).otherInfo);
+                toSave += "," + csvSafe(carsList.get(i).url);
                 
                 file.println(toSave);
 
@@ -87,19 +88,15 @@ public class InfoScraper {
 
     }//end saveFile
     
-    /*public static void saveURLs(String filename) {
-        try {
-            PrintWriter file = new PrintWriter(new FileWriter(filename));
-
-            for (int i = 0; i < URLs.size(); i++) {               
-                file.println(URLs.get(i));
-            }
-            file.close();
-        } catch (IOException ex) {
-            System.out.println(ex.toString());
+    public static String csvSafe(String input) {
+        
+        if (input.contains(",")) {
+            input = "\"" + input + "\"";
         }
-
-    }//end saveFile*/
+        //if input contans no commas, what's the point in continuing?, just return the input
+        
+        return input;
+    }
     
     public static boolean allThreadsDone(ArrayList<Thread> list) {
         boolean threadsRunning = false;

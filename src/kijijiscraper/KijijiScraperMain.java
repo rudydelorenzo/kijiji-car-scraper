@@ -18,6 +18,9 @@ public class KijijiScraperMain {
             
     public static void main(String[] args) {
         
+        //should really launch with line below
+        //URL = args[0];
+        
         getLinksFromURL(URL);
         
         saveToTextfile(resultLinks);

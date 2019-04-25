@@ -14,150 +14,182 @@ public class Car {
     private boolean failed = false;
     
     public int price;
-    public String condition;
-    public String make;
-    public String model;
+    public String condition = "N/A";
+    public String make = "N/A";
+    public String model = "N/A";
     public int year;
-    public String transmission;
-    public String drivetrain;
-    public String fuelType;
-    public String trim;
+    public String transmission = "N/A";
+    public String drivetrain = "N/A";
+    public String fuelType = "N/A";
+    public String trim = "N/A";
     public int kilometers;
-    public String body;
-    public String color;
+    public String body = "N/A";
+    public String color = "N/A";
     public int seats;
-    public String url;
+    public String url = "N/A";
     public boolean soldByDealer;
-    public boolean carSold;
-    public String otherInfo;
+    public boolean carSold = false;
+    public String otherInfo = "None";
+    public String diagnosticMsgs = "";
     
     public Car() {
         //do not use
     }
     
-    public Car(ArrayList<String> carInfo) {
-        condition = carInfo.get(0);
-        make = carInfo.get(1);
-        model = carInfo.get(2);
-        year = Integer.parseInt(carInfo.get(3));
-        trim = carInfo.get(4);
-        kilometers = stringToInt(carInfo.get(5));
-        body = carInfo.get(6);
-        color = carInfo.get(7);
-        seats = Integer.parseInt(carInfo.get(8));
-    }
-    
     public Car(String url) throws CarSoldException{
-        
-        try {
-            Document page = Jsoup.connect(url).userAgent("Mozilla/17.0").get();
+        do {
             try {
-                Element attributesBox = page.getElementById("AttributeList");
+                Document page = Jsoup.connect(url).userAgent("Mozilla/17.0").get();
+                try {
+                    Element attributesBox = page.getElementById("AttributeList");
 
-                Elements attributeLists = attributesBox.getElementsByTag("ul");
+                    Elements attributeLists = attributesBox.getElementsByTag("ul");
 
-                ArrayList<String> carData = new ArrayList();
-                this.url = url;
+                    ArrayList<String> carData = new ArrayList();
+                    this.url = url;
 
-                System.out.println("-------------------------------");
+                    //System.out.println("-------------------------------");
 
-                for (Element currentList : attributeLists) {
-                    for (Element currentElement : currentList.getElementsByTag("li")) {
-                        if (currentElement.getElementsByTag("span").isEmpty()) {
-                            String attribute;
-                            String value;
-                            try {
-                                attribute = currentElement.getElementsByTag("dt").first().text();
-                            } catch (NullPointerException e) {
-                                attribute = "N/A";
+                    for (Element currentList : attributeLists) {
+                        for (Element currentElement : currentList.getElementsByTag("li")) {
+                            if (currentElement.getElementsByTag("span").isEmpty()) {
+                                String attribute;
+                                String value;
+                                try {
+                                    attribute = currentElement.getElementsByTag("dt").first().text();
+                                } catch (NullPointerException e) {
+                                    attribute = "N/A";
+                                }
+                                try {
+                                    value = currentElement.getElementsByTag("dd").first().text();
+                                } catch (NullPointerException e) {
+                                    value = "N/A";
+                                }
+                                assignData(attribute, value);
+                                //System.out.println(attribute + " : " + value);
+                            } else {
+                                //includes stuff
+                                String value;
+                                try {
+                                    value = currentElement.getElementsByTag("span").first().text();
+                                } catch (NullPointerException e) {
+                                    value = "N/A";
+                                }
+                                assignData("includes", value);
+                                //System.out.println("INCLUDES : " + value);
                             }
-                            try {
-                                value = currentElement.getElementsByTag("dd").first().text();
-                            } catch (NullPointerException e) {
-                                value = "N/A";
-                            }
-                            //carData.add(currentElement.getElementsByTag("td").first().text());
-                            System.out.println(attribute + " : " + value);
-                        } else {
-                            //includes stuff
-                            String value;
-                            try {
-                                value = currentElement.getElementsByTag("span").first().text();
-                            } catch (NullPointerException e) {
-                                value = "N/A";
-                            }
-                            System.out.println("INCLUDES : " + value);
                         }
+
                     }
-
+                } catch (NullPointerException e) {
+                    if (page.select("div.expired-ad-container") != null) {
+                        carSold = true;
+                        System.out.println("Car at " + url + " was sold!");
+                    }
                 }
-            } catch (NullPointerException e) {
-                if (page.select("div.expired-ad-container") != null) {
-                    carSold = true;
-                    System.out.println("Car at " + url + " was sold!");
-                }
-            }
-            //assignOverviewArrayData(carData); 
-            
-            //gotta change up how values are assigned. attribute and value will get fed into a method with a ton of if statements.
-            
-            try {
-                
-                Element priceContainer = page.getElementsByAttributeValue("itemprop", "price").first();
+                //assignOverviewArrayData(carData); 
 
-                price = stringToInt(priceContainer.getElementsContainingText("$").first().text());
-                
-                System.out.println("PRICE : " + price);
-                
-            } catch (NullPointerException e) {
-                System.out.println("PRICE : Could not be determined");
-            }
-            
-            try {
-                Element priceCont = page.getElementsByAttributeValue("itemprop", "offers").first();
-                soldByDealer = !priceCont.getElementsByClass("additionalTaxes-1130400051").isEmpty();
-                System.out.println("SOLD BY DEALER : " + soldByDealer);
-            } catch (NullPointerException e) {
-                System.out.println("Couldn't determine car seller");
-                soldByDealer = false;
-            }
-            
-            failed = false;
-        } catch(IOException e) {
-            if (e instanceof org.jsoup.HttpStatusException) {
-                //error 404, car was sold
+                //gotta change up how values are assigned. attribute and value will get fed into a method with a ton of if statements.
+
+                try {
+
+                    Element priceContainer = page.getElementsByAttributeValue("itemprop", "price").first();
+
+                    price = stringToInt(priceContainer.getElementsContainingText("$").first().text());
+
+                    //System.out.println("PRICE : " + price);
+
+                } catch (NullPointerException e) {
+                    System.out.println("PRICE : Could not be determined");
+                }
+
+                try {
+                    Element priceCont = page.getElementsByAttributeValue("itemprop", "offers").first();
+                    soldByDealer = !priceCont.getElementsByClass("additionalTaxes-1130400051").isEmpty();
+                    //System.out.println("SOLD BY DEALER : " + soldByDealer);
+                } catch (NullPointerException e) {
+                    System.out.println("Couldn't determine car seller");
+                    soldByDealer = false;
+                }
+
                 failed = false;
-            } else {
-                System.out.println("Couldn't connect to website, retrying...");
-                failed = true;
-                attempts++;
+            } catch(IOException e) {
+                if (e instanceof org.jsoup.HttpStatusException) {
+                    //error 404, car was sold
+                    failed = false;
+                } else {
+                    System.out.println("Couldn't connect to website " + url + ", retrying...");
+                    failed = true;
+                    attempts++;
+                }
             }
-        }
+        } while(attempts <= 3 && failed);
     }
     
-    private void assignOverviewArrayData(ArrayList<String> array) {
-        condition = array.get(0);
-        make = array.get(1);
-        model = array.get(2);
-        try {
-            year = Integer.parseInt(array.get(3));
-        } catch (java.lang.NumberFormatException e) {
-            year = 0;
-        }
-        trim = array.get(4);
-        try {
-            kilometers = stringToInt(array.get(5));
-        } catch (java.lang.NumberFormatException e) {
-            kilometers = 0;
+    private void assignData(String attribute, String value) {
+        switch (attribute.toLowerCase()) {
+            case "N/A":
+                break;
+            case "condition":
+                condition = value;
+                break;
+            case "make":
+                make = value;
+                break;
+            case "model":
+                model = value;
+                break;
+            case "year":
+                try {
+                    year = stringToInt(value);
+                } catch (java.lang.NumberFormatException e) {
+                    System.out.println("Year failed to convert");
+                    year = 0;
+                }
+                break;
+            case "trim":
+                trim = value;
+                break;
+            case "kilometers":
+                try {
+                    kilometers = stringToInt(value);
+                } catch (java.lang.NumberFormatException e) {
+                    System.out.println("KMs failed to convert");
+                    kilometers = 0;
+                }
+                break;
+            case "body type":
+                body = value;
+                break;
+            case "colour":
+                color = value;
+                break;
+            case "no. of seats":
+                try {
+                    seats = stringToInt(value);
+                } catch (java.lang.NumberFormatException e) {
+                    System.out.println("No. of seats failed to convert");
+                    seats = 0;
+                }
+                break;
+            case "transmission":
+                transmission = value;
+                break;
+            case "drivetrain":
+                drivetrain = value;
+                break;
+            case "fuel type":
+                fuelType = value;
+                break;
+            case "includes":
+                if (!otherInfo.contains("Includes")) {
+                    otherInfo = "Includes: " + value;
+                } else {
+                    otherInfo += (", " + value);
+                }
+                break;
         }
         
-        body = array.get(6);
-        color = array.get(7);
-        try {
-            seats = Integer.parseInt(array.get(8));
-        } catch (java.lang.NumberFormatException e) {
-            seats = 0;
-        }
         
     }
     
