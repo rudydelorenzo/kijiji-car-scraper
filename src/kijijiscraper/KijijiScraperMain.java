@@ -13,6 +13,7 @@ import org.jsoup.select.*;
 public class KijijiScraperMain {
     
     public static String URL = "https://www.kijiji.ca/b-cars-trucks/edmonton/wagon-used/c174l1700203a138a49?price=__3000";
+    //public static String URL = "https://www.kijiji.ca/b-cars-trucks/edmonton/new__used/c174l1700203a49?price=__3000"; //massive list
     public static ArrayList<String> resultLinks = new ArrayList();
     public static String filename = "linkskijiji.txt";
             
@@ -25,7 +26,7 @@ public class KijijiScraperMain {
         
         saveToTextfile(resultLinks);
 
-        String[] arguments = {filename};
+        String[] arguments = {filename, "stationwagons.csv"};
 
         InfoScraper.main(arguments);
 

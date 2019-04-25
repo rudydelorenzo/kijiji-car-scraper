@@ -34,7 +34,7 @@ public class InfoScraper {
         //holds up on saving until all threads are done :)
         while (allThreadsDone(threadList)) {}
         
-        saveCarsCSV("carskijiji.csv");
+        saveCarsCSV(args[1]);
         
     }
     
