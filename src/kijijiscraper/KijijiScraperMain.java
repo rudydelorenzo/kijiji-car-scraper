@@ -64,7 +64,10 @@ public class KijijiScraperMain {
                     }
                 }
                 for (Element currentResult : resultDivs) {
-                    resultLinks.add((protocol + "://" + hostname + currentResult.attr("data-vip-url")));
+                    if (!currentResult.attr("data-vip-url").contains("kijijiautos.")) {
+                        //filter out kijijiautos links for now
+                        resultLinks.add((protocol + "://" + hostname + currentResult.attr("data-vip-url")));
+                    }
                 }
                 
                 //if there is a next, click it and scrape web

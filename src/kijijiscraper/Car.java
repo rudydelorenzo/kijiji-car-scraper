@@ -123,7 +123,7 @@ public class Car {
                     attempts++;
                 }
             }
-        } while(attempts <= 3 && failed);
+        } while(attempts < 3 && failed);
     }
     
     private void assignData(String attribute, String value) {

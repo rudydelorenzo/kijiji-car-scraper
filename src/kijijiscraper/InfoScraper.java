@@ -11,7 +11,7 @@ public class InfoScraper {
     
     public static ArrayList<Car> carsList = new ArrayList();
     
-    public static void main(String[] args) {
+    public static ArrayList<Car> main(String[] args) {
         
         final ArrayList<String> URLs = loadURLFile(args[0]);
         ArrayList<Thread> threadList = new ArrayList();
@@ -35,6 +35,8 @@ public class InfoScraper {
         while (allThreadsDone(threadList)) {}
         
         saveCarsCSV(args[1]);
+        
+        return carsList;
         
     }
     
