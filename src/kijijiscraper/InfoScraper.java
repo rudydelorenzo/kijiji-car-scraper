@@ -78,6 +78,7 @@ public class InfoScraper {
                 toSave += "," + carsList.get(i).price;
                 toSave += "," + carsList.get(i).soldByDealer;
                 toSave += "," + csvSafe(carsList.get(i).otherInfo);
+                toSave += "," + csvSafe(carsList.get(i).description);
                 toSave += "," + csvSafe(carsList.get(i).url);
                 
                 file.println(toSave);

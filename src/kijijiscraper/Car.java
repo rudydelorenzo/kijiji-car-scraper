@@ -15,6 +15,7 @@ public class Car {
     
     public int price;
     public String condition = "N/A";
+    public String description = "N/A";
     public String make = "N/A";
     public String model = "N/A";
     public int year;
@@ -110,6 +111,15 @@ public class Car {
                 } catch (NullPointerException e) {
                     System.out.println("Couldn't determine car seller");
                     soldByDealer = false;
+                }
+                
+                //get description
+                try {
+                    Element descriptionContent = page.getElementsByClass("descriptionContainer-3544745383").first();
+                    description = descriptionContent.getElementsByAttributeValue("itemprop", "description").text();
+                    //System.out.println(description);
+                } catch (NullPointerException e) {
+                    System.out.println("Couldn't find description");
                 }
 
                 failed = false;
