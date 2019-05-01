@@ -9,47 +9,106 @@ import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class KijijiScraperMain {
+public class KijijiScraperMain extends Application{
     
-    public static String URL = "https://www.kijiji.ca/b-cars-trucks/edmonton/used/c174l1700203a49?price=__4000";
-    //https://www.kijiji.ca/b-cars-trucks/edmonton/new__used/c174l1700203a49?price=__3000 //massive list
-    //https://www.kijiji.ca/b-cars-trucks/edmonton/used/c174l1700203a49?price=__4000 under 4000
-    //https://www.kijiji.ca/b-cars-trucks/edmonton/wagon-used/c174l1700203a138a49?price=__3000 wagons
-    
+    public static String URL;
     public static ArrayList<String> resultLinks = new ArrayList();
-    public static String filename = "linkskijiji.txt";
-            
+    public static String filename = "wagonsunder4k.csv";
+    public static ArrayList<Car> carsList = new ArrayList();
+    
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Kijiji Scraper");
+        scrape();
+        primaryStage.show();
+    }
+    
     public static void main(String[] args) {
         
-        //should really launch with line below
-        //URL = args[0];
+        launch(args);
+        
+    }
+    
+    public static void scrape() {
+        
+        URL = buildURL("edmonton-area", "wagon", "used", 0, 4000);
         
         getLinksFromURL(URL);
         
-        saveToTextfile(resultLinks);
-
-        String[] arguments = {filename, "carsunder4k.csv"};
-
-        InfoScraper.main(arguments);
-
+        final ArrayList<String> finalURLs = resultLinks;
+        
+        ArrayList<Thread> threadList = new ArrayList();
+        
+        for (int i = 0; i<finalURLs.size(); i++) {
+            final int f = i;
+            threadList.add(i, new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        carsList.add(new Car(finalURLs.get(f)));
+                    } catch (CarSoldException e) {
+                        System.out.println("Car at " + finalURLs.get(f) + " was either sold or link pointed to a non-existent page.");
+                    }
+                }
+            });
+            threadList.get(i).start();
+        }
+        
+        //holds up on saving until all threads are done :)
+        while (allThreadsDone(threadList)) {}
+        
+        saveCarsCSV(filename);
+        
     }
     
-    public static void saveToTextfile(ArrayList<String> links) {
+    public static void saveCarsCSV(String filename) {
         try {
             PrintWriter file = new PrintWriter(new FileWriter(filename));
 
-            for (int i = 0; i < links.size(); i++) {
-                file.println(links.get(i));
+            for (int i = 0; i < carsList.size(); i++) {
+                //the next lines are customized for whatever data you are getting.
+                //add CSVSAFE method to any strings
+                String toSave = "";
+                toSave = "" + carsList.get(i).year;
+                toSave += "," + csvSafe(carsList.get(i).condition);
+                toSave += "," + csvSafe(carsList.get(i).make);
+                toSave += "," + csvSafe(carsList.get(i).model);
+                toSave += "," + csvSafe(carsList.get(i).trim);
+                toSave += "," + csvSafe(carsList.get(i).body);
+                toSave += "," + csvSafe(carsList.get(i).color);
+                toSave += "," + carsList.get(i).seats;
+                toSave += "," + carsList.get(i).kilometers;
+                toSave += "," + csvSafe(carsList.get(i).transmission);
+                toSave += "," + csvSafe(carsList.get(i).fuelType);
+                toSave += "," + carsList.get(i).price;
+                toSave += "," + carsList.get(i).soldByDealer;
+                toSave += "," + csvSafe(carsList.get(i).otherInfo);
+                toSave += "," + csvSafe(carsList.get(i).description);
+                toSave += "," + csvSafe(carsList.get(i).url);
+                
+                file.println(toSave);
+
             }
-            
             file.close();
         } catch (IOException ex) {
-        System.out.println(ex.toString());
+            System.out.println(ex.toString());
         }
 
+    }//end saveFile
+    
+    public static String csvSafe(String input) {
+        
+        if (input.contains(",")) {
+            input = "\"" + input + "\"";
+        }
+        //if input contans no commas, what's the point in continuing?, just return the input
+        
+        return input;
     }
-
+    
     public static void getLinksFromURL(String url) {
         try {
             String protocol = new URL(URL).getProtocol();
@@ -92,5 +151,82 @@ public class KijijiScraperMain {
         } catch (MalformedURLException e) {
             System.out.println("Bad URL.");
         }
+    }
+    
+    public static String buildURL(String area, String body, String condition, int min, int max) {
+        String url;
+        String areaCode = "edmonton"; //must have a default value
+        String bodyCode = null;
+        String condCode = null;
+        String categoryCode = "c174l1700202";
+        String price = "";
+        
+        url = "https://www.kijiji.ca/b-cars-trucks";
+        
+        if (area != null) {
+            switch (area.toLowerCase()) {
+                case "edmonton area":
+                    areaCode = "edmonton-area";
+                case "edmonton":
+                    areaCode = "edmonton";
+            }
+        }
+        
+        if (body != null) {
+            switch (body.toLowerCase()) {
+                case "wagon":
+                    bodyCode = "wagon";
+                    categoryCode += "a138";
+            }
+        }
+        
+        if (condition != null) {
+            switch (condition.toLowerCase()) {
+                case "used":
+                    condCode = "used";
+                    categoryCode += "a49";
+            }
+        }
+        
+        String bodyCondCombo = null;
+        if (condCode != null && bodyCode != null) {
+            bodyCondCombo = bodyCode + "-" + condCode;
+        } else if (condCode != null) {
+            bodyCondCombo = condCode;
+        } else if (bodyCode != null) {
+            bodyCondCombo = bodyCode;
+        }
+        
+        //price stuffs
+        if (min > 0 || max > 0) {
+            if ((min < max) || (min > max && max <= 0)) {
+                price = "?price=";
+                if (min > 0) {
+                    price += min;
+                }
+                price += "__";
+                if (max > 0) {
+                    price += max;
+                }
+            }
+        }
+        
+        url += "/" + areaCode;
+        if (bodyCondCombo != null) {
+            url += "/" + bodyCondCombo;
+        }
+        url += "/" + categoryCode;
+        url += price;
+        
+        return url;
+    }
+    
+    public static boolean allThreadsDone(ArrayList<Thread> list) {
+        boolean threadsRunning = false;
+        
+        for (Thread currentThread : list) {
+            if (currentThread.isAlive()) threadsRunning = true;
+        }
+        return threadsRunning;
     }
 }
