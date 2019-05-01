@@ -15,8 +15,8 @@ import javafx.stage.Stage;
 public class KijijiScraperMain extends Application{
     
     public static String URL;
-    public static ArrayList<String> resultLinks = new ArrayList();
     public static String filename = "wagonsunder4k.csv";
+    public static ArrayList<String> resultLinks = new ArrayList();
     public static ArrayList<Car> carsList = new ArrayList();
     
     @Override
