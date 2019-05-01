@@ -10,6 +10,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class KijijiScraperMain extends Application{
@@ -18,17 +27,62 @@ public class KijijiScraperMain extends Application{
     public static String filename = "wagonsunder4k.csv";
     public static ArrayList<String> resultLinks = new ArrayList();
     public static ArrayList<Car> carsList = new ArrayList();
+    public static Stage stage;
+    public static Scene searchScene;
+    public static BorderPane mainBorderPane;
+    public static TextField minPriceField, maxPriceField;
+    public static ComboBox bodyComboBox;
+    public static ToggleButton noneButton, usedButton, newButton;
+    public static Image bannerImage;
+    public static ImageView bannerImageView;
+    public static DropShadow dropShadow = new DropShadow(15, Color.BLACK);
     
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Kijiji Scraper");
-        scrape();
-        primaryStage.show();
+        stage = primaryStage;
+        stage.setTitle("Kijiji Scraper");
+        
+        makeSearchScene();
+        
+        stage.setScene(searchScene);
+        stage.setHeight(400);
+        stage.setMinHeight(400);
+        stage.setWidth(1000);
+        
+        stage.show();
     }
     
     public static void main(String[] args) {
-        
+        //scrape();
+        bannerImage = new Image("file:logo/mainBanner.png");
         launch(args);
+        
+    }
+    
+    public static void makeSearchScene() {
+        mainBorderPane = new BorderPane();
+        noneButton = new ToggleButton("NONE");
+        newButton = new ToggleButton("NEW");
+        usedButton = new ToggleButton("USED");
+        HBox conditionButtons = new HBox(0);
+        conditionButtons.getChildren().addAll(noneButton, newButton, usedButton);
+        conditionButtons.setAlignment(Pos.TOP_CENTER);
+        mainBorderPane.setCenter(conditionButtons);
+        conditionButtons.setPadding(new Insets(8));
+        
+        bannerImageView = new ImageView();
+        bannerImageView.setImage(bannerImage);
+        bannerImageView.setFitHeight(150);
+        bannerImageView.setPreserveRatio(true);
+        bannerImageView.setFitWidth(900);
+        bannerImageView.setEffect(dropShadow);
+        mainBorderPane.setTop(bannerImageView);
+        
+        searchScene = new Scene(mainBorderPane);
+        mainBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        
+        bannerImageView.fitWidthProperty().bind(stage.widthProperty());
+        bannerImageView.fitHeightProperty().bind(stage.heightProperty());
         
     }
     
