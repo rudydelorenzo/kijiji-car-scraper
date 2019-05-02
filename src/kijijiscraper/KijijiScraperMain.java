@@ -11,6 +11,7 @@ import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -31,7 +32,7 @@ public class KijijiScraperMain extends Application{
     public static Scene searchScene;
     public static BorderPane mainBorderPane;
     public static TextField minPriceField, maxPriceField;
-    public static ComboBox bodyComboBox;
+    public static ComboBox locationComboBox;
     public static ToggleButton noneButton, usedButton, newButton;
     public static Image bannerImage;
     public static ImageView bannerImageView;
@@ -40,7 +41,7 @@ public class KijijiScraperMain extends Application{
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
-        stage.setTitle("Kijiji Scraper");
+        stage.setTitle("KIJIJI Scraper");
         
         makeSearchScene();
         
@@ -61,22 +62,63 @@ public class KijijiScraperMain extends Application{
     
     public static void makeSearchScene() {
         mainBorderPane = new BorderPane();
-        noneButton = new ToggleButton("NONE");
+        mainBorderPane.getStylesheets().add("/CSS/searchStylesheet.css");
+        noneButton = new ToggleButton("ANY");
+        noneButton.setId("anyButton");
         newButton = new ToggleButton("NEW");
+        newButton.setId("newButton");
         usedButton = new ToggleButton("USED");
+        usedButton.setId("usedButton");
         HBox conditionButtons = new HBox(0);
         conditionButtons.getChildren().addAll(noneButton, newButton, usedButton);
         conditionButtons.setAlignment(Pos.TOP_CENTER);
-        mainBorderPane.setCenter(conditionButtons);
         conditionButtons.setPadding(new Insets(8));
+        
+        HBox priceSelect = new HBox(8);
+        minPriceField = new TextField();
+        minPriceField.setPromptText("MIN.");
+        minPriceField.setId("priceBox");
+        Label toLabel = new Label("to");
+        toLabel.setAlignment(Pos.CENTER);
+        toLabel.setId("toLabel");
+        maxPriceField = new TextField();
+        maxPriceField.setPromptText("MAX.");
+        maxPriceField.setId("priceBox");
+        priceSelect.getChildren().addAll(minPriceField, toLabel, maxPriceField);
+        priceSelect.setAlignment(Pos.CENTER);
+        
+        VBox leftColumn = new VBox(12);
+        leftColumn.getChildren().addAll(conditionButtons, priceSelect);
+        leftColumn.setAlignment(Pos.CENTER);
+        
+        Separator searchSeparator = new Separator(Orientation.VERTICAL);
+        searchSeparator.setPadding(new Insets(8));
+        
+        locationComboBox = new ComboBox();
+        locationComboBox.setEditable(true);
+        locationComboBox.getItems().addAll("Edmonton Area", "Edmonton");
+        locationComboBox.setId("locationBox");
+        
+        VBox rightColumn = new VBox(12);
+        rightColumn.getChildren().addAll(locationComboBox);
+        rightColumn.setAlignment(Pos.CENTER);
+        
+        HBox centerWrapper = new HBox(25);
+        centerWrapper.getChildren().addAll(leftColumn, searchSeparator, rightColumn);
+        centerWrapper.setAlignment(Pos.CENTER);
+        
+        mainBorderPane.setCenter(centerWrapper);
         
         bannerImageView = new ImageView();
         bannerImageView.setImage(bannerImage);
         bannerImageView.setFitHeight(150);
         bannerImageView.setPreserveRatio(true);
         bannerImageView.setFitWidth(900);
-        bannerImageView.setEffect(dropShadow);
-        mainBorderPane.setTop(bannerImageView);
+        
+        StackPane imageContainer = new StackPane(bannerImageView);
+        imageContainer.setAlignment(Pos.CENTER);
+        imageContainer.setStyle("-fx-background-color: #373373;");
+        mainBorderPane.setTop(imageContainer);
         
         searchScene = new Scene(mainBorderPane);
         mainBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));

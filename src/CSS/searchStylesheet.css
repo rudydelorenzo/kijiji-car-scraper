@@ -1,0 +1,59 @@
+#anyButton {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 25;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 10px 0px 0px 10px;
+    -fx-pref-width: 150px;
+}
+
+#newButton {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 25;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 0px 0px 0px 0px;
+    -fx-pref-width: 150px;
+}
+
+#usedButton {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 25;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 0px 10px 10px 0px;
+    -fx-pref-width: 150px;
+}
+
+#anyButton:hover,
+#newButton:hover,
+#usedButton:hover {
+    -fx-background-color: #e9e9e9;
+    -fx-text-fill: #202020;
+}
+
+#anyButton:selected,
+#newButton:selected,
+#usedButton:selected {
+    -fx-background-color: #373373;
+    -fx-text-fill: #dfdfdf;  
+}
+
+#anyButton:pressed,
+#newButton:pressed,
+#usedButton:pressed {
+    -fx-background-color: #bfbfbf;
+    -fx-text-fill: #202020;
+}
+
+#priceBox {
+    -fx-pref-height: 40px;
+    -fx-pref-width: 120px;
+    -fx-font-size: 25;
+}
+
+#toLabel {
+    -fx-font-size: 25;
+    -fx-padding: 15px;
+}
+
+#locationBox {
+    -fx-font-size: 25;
+}
