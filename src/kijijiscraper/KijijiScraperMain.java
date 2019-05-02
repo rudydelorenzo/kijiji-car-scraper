@@ -37,6 +37,7 @@ public class KijijiScraperMain extends Application{
     public static ToggleGroup conditionGroup = new ToggleGroup();
     public static ToggleButton convertibleToggle, coupeToggle, hatchbackToggle, vanToggle, pickupToggle, sedanToggle, suvToggle, wagonToggle, otherbodyToggle;
     public static ToggleGroup bodyTypeGroup = new ToggleGroup();
+    public static Button searchButton;
     public static Image bannerImage;
     public static ImageView bannerImageView;
     public static DropShadow dropShadow = new DropShadow(15, Color.BLACK);
@@ -49,8 +50,8 @@ public class KijijiScraperMain extends Application{
         makeSearchScene();
         
         stage.setScene(searchScene);
-        stage.setHeight(480);
-        stage.setMinHeight(480);
+        stage.setHeight(550);
+        stage.setMinHeight(550);
         stage.setWidth(1100);
         stage.setMinWidth(1100);
         
@@ -139,8 +140,20 @@ public class KijijiScraperMain extends Application{
         rightColumn.getChildren().addAll(locationComboBox, bodyButtons);
         rightColumn.setAlignment(Pos.CENTER);
         
-        HBox centerWrapper = new HBox(25);
-        centerWrapper.getChildren().addAll(leftColumn, searchSeparator, rightColumn);
+        HBox centerTop = new HBox(25);
+        centerTop.getChildren().addAll(leftColumn, searchSeparator, rightColumn);
+        centerTop.setAlignment(Pos.CENTER);
+        
+        searchButton = new Button("SEARCH");
+        searchButton.setId("searchButton");
+        
+        HBox centerBottom = new HBox(0);
+        centerBottom.setPadding(new Insets(20,0,0,0));
+        centerBottom.getChildren().addAll(searchButton);
+        centerBottom.setAlignment(Pos.CENTER);
+        
+        VBox centerWrapper = new VBox();
+        centerWrapper.getChildren().addAll(centerTop, centerBottom);
         centerWrapper.setAlignment(Pos.CENTER);
         
         mainBorderPane.setCenter(centerWrapper);

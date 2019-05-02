@@ -65,7 +65,7 @@
     -fx-text-fill: #202020;
     -fx-background-radius: 10px 0px 0px 0px;
     -fx-pref-width: 150px;
-    -fx-pref-height: 50px;
+    -fx-pref-height: 40px;
 }
 #bodyButtonTR {
     -fx-background-color: #dfdfdf;
@@ -73,31 +73,31 @@
     -fx-text-fill: #202020;
     -fx-background-radius: 0px 10px 0px 0px;
     -fx-pref-width: 150px;
-    -fx-pref-height: 50px;
+    -fx-pref-height: 40px;
 }
 #bodyButtonBL {
     -fx-background-color: #dfdfdf;
-    -fx-font-size: 25;
+    -fx-font-size: 18;
     -fx-text-fill: #202020;
     -fx-background-radius: 0px 0px 0px 10px;
     -fx-pref-width: 150px;
-    -fx-pref-height: 50px;
+    -fx-pref-height: 40px;
 }
 #bodyButtonBR {
     -fx-background-color: #dfdfdf;
-    -fx-font-size: 25;
+    -fx-font-size: 18;
     -fx-text-fill: #202020;
     -fx-background-radius: 0px 0px 10px 0px;
     -fx-pref-width: 150px;
-    -fx-pref-height: 50px;
+    -fx-pref-height: 40px;
 }
 #bodyButton {
     -fx-background-color: #dfdfdf;
-    -fx-font-size: 25;
+    -fx-font-size: 18;
     -fx-text-fill: #202020;
     -fx-background-radius: 0px 0px 0px 0px;
     -fx-pref-width: 150px;
-    -fx-pref-height: 50px;
+    -fx-pref-height: 40px;
 }
 
 #bodyButtonTL:hover,
@@ -125,4 +125,9 @@
 #bodyButton:pressed {
     -fx-background-color: #bfbfbf;
     -fx-text-fill: #202020;
+}
+
+#searchButton {
+    -fx-pref-width: 400px;
+    -fx-font-size: 40px;
 }
