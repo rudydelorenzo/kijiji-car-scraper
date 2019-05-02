@@ -34,6 +34,9 @@ public class KijijiScraperMain extends Application{
     public static TextField minPriceField, maxPriceField;
     public static ComboBox locationComboBox;
     public static ToggleButton noneButton, usedButton, newButton;
+    public static ToggleGroup conditionGroup = new ToggleGroup();
+    public static ToggleButton convertibleToggle, coupeToggle, hatchbackToggle, vanToggle, pickupToggle, sedanToggle, suvToggle, wagonToggle, otherbodyToggle;
+    public static ToggleGroup bodyTypeGroup = new ToggleGroup();
     public static Image bannerImage;
     public static ImageView bannerImageView;
     public static DropShadow dropShadow = new DropShadow(15, Color.BLACK);
@@ -46,9 +49,10 @@ public class KijijiScraperMain extends Application{
         makeSearchScene();
         
         stage.setScene(searchScene);
-        stage.setHeight(400);
-        stage.setMinHeight(400);
-        stage.setWidth(1000);
+        stage.setHeight(480);
+        stage.setMinHeight(480);
+        stage.setWidth(1100);
+        stage.setMinWidth(1100);
         
         stage.show();
     }
@@ -69,6 +73,7 @@ public class KijijiScraperMain extends Application{
         newButton.setId("newButton");
         usedButton = new ToggleButton("USED");
         usedButton.setId("usedButton");
+        conditionGroup.getToggles().addAll(noneButton, newButton, usedButton);
         HBox conditionButtons = new HBox(0);
         conditionButtons.getChildren().addAll(noneButton, newButton, usedButton);
         conditionButtons.setAlignment(Pos.TOP_CENTER);
@@ -99,8 +104,39 @@ public class KijijiScraperMain extends Application{
         locationComboBox.getItems().addAll("Edmonton Area", "Edmonton");
         locationComboBox.setId("locationBox");
         
+        convertibleToggle = new ToggleButton("CONVERTIBLE");
+        coupeToggle = new ToggleButton("COUPE");
+        hatchbackToggle = new ToggleButton("HATCHBACK");
+        vanToggle = new ToggleButton("VAN");
+        pickupToggle = new ToggleButton("PICKUP");
+        sedanToggle = new ToggleButton("SEDAN");
+        suvToggle = new ToggleButton("SUV");
+        wagonToggle = new ToggleButton("WAGON");
+        otherbodyToggle = new ToggleButton("OTHER");
+        bodyTypeGroup.getToggles().addAll(convertibleToggle, coupeToggle, hatchbackToggle, vanToggle, pickupToggle, sedanToggle, suvToggle, wagonToggle, otherbodyToggle);
+        
+        HBox topBodyButtons = new HBox(0);
+        HBox middleBodyButtons = new HBox(0);
+        HBox bottomBodyButtons = new HBox(0);
+        for (int i = 0; i<bodyTypeGroup.getToggles().size(); i++) {
+            ((ToggleButton) bodyTypeGroup.getToggles().get(i)).setId("bodyButton");
+            if (i <= 2) {
+                if (i == 0) ((ToggleButton) bodyTypeGroup.getToggles().get(i)).setId("bodyButtonTL");
+                else if (i == 2) ((ToggleButton) bodyTypeGroup.getToggles().get(i)).setId("bodyButtonTR");
+                topBodyButtons.getChildren().addAll((ToggleButton) bodyTypeGroup.getToggles().get(i));
+            } else if (i <= 5){
+                middleBodyButtons.getChildren().addAll((ToggleButton) bodyTypeGroup.getToggles().get(i));
+            } else {
+                if (i == 6) ((ToggleButton) bodyTypeGroup.getToggles().get(i)).setId("bodyButtonBL");
+                else if (i == 8) ((ToggleButton) bodyTypeGroup.getToggles().get(i)).setId("bodyButtonBR");
+                bottomBodyButtons.getChildren().addAll((ToggleButton) bodyTypeGroup.getToggles().get(i));
+            }
+        }
+        VBox bodyButtons = new VBox(0);
+        bodyButtons.getChildren().addAll(topBodyButtons, middleBodyButtons, bottomBodyButtons);
+        
         VBox rightColumn = new VBox(12);
-        rightColumn.getChildren().addAll(locationComboBox);
+        rightColumn.getChildren().addAll(locationComboBox, bodyButtons);
         rightColumn.setAlignment(Pos.CENTER);
         
         HBox centerWrapper = new HBox(25);

@@ -56,4 +56,73 @@
 
 #locationBox {
     -fx-font-size: 25;
+    -fx-pref-width: 450px;
+}
+
+#bodyButtonTL {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 18;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 10px 0px 0px 0px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+}
+#bodyButtonTR {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 18;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 0px 10px 0px 0px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+}
+#bodyButtonBL {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 25;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 0px 0px 0px 10px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+}
+#bodyButtonBR {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 25;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 0px 0px 10px 0px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+}
+#bodyButton {
+    -fx-background-color: #dfdfdf;
+    -fx-font-size: 25;
+    -fx-text-fill: #202020;
+    -fx-background-radius: 0px 0px 0px 0px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+}
+
+#bodyButtonTL:hover,
+#bodyButtonTR:hover,
+#bodyButtonBL:hover,
+#bodyButtonBR:hover,
+#bodyButton:hover {
+    -fx-background-color: #e9e9e9;
+    -fx-text-fill: #202020;
+}
+
+#bodyButtonTL:selected,
+#bodyButtonTR:selected,
+#bodyButtonBL:selected,
+#bodyButtonBR:selected,
+#bodyButton:selected {
+    -fx-background-color: #373373;
+    -fx-text-fill: #dfdfdf;  
+}
+
+#bodyButtonTL:pressed,
+#bodyButtonTR:pressed,
+#bodyButtonBL:pressed,
+#bodyButtonBR:pressed,
+#bodyButton:pressed {
+    -fx-background-color: #bfbfbf;
+    -fx-text-fill: #202020;
 }
