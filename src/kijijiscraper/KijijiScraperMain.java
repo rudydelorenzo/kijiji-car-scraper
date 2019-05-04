@@ -1,5 +1,6 @@
 package kijijiscraper;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,6 +11,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -20,14 +23,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class KijijiScraperMain extends Application{
+public class KijijiScraperMain extends Application implements EventHandler<ActionEvent>{
     
     public static String URL;
     public static String filename = "wagonsunder4k.csv";
-    public static ArrayList<String> resultLinks = new ArrayList();
-    public static ArrayList<Car> carsList = new ArrayList();
+    public static ArrayList<String> resultLinks;
+    public static ArrayList<Car> carsList;
     public static Stage stage;
     public static Scene searchScene;
     public static BorderPane mainBorderPane;
@@ -65,7 +69,12 @@ public class KijijiScraperMain extends Application{
         
     }
     
-    public static void makeSearchScene() {
+    @Override
+    public  void handle(ActionEvent event) {
+        if (event.getSource() == searchButton) scrape(locationComboBox.getSelectionModel(), bodyTypeGroup.getSelectedToggle(), conditionGroup.getSelectedToggle(), minPriceField.getText(), maxPriceField.getText());
+    }
+    
+    public void makeSearchScene() {
         mainBorderPane = new BorderPane();
         mainBorderPane.getStylesheets().add("/CSS/searchStylesheet.css");
         noneButton = new ToggleButton("ANY");
@@ -146,6 +155,7 @@ public class KijijiScraperMain extends Application{
         
         searchButton = new Button("SEARCH");
         searchButton.setId("searchButton");
+        searchButton.setOnAction(this);
         
         HBox centerBottom = new HBox(0);
         centerBottom.setPadding(new Insets(20,0,0,0));
@@ -177,9 +187,13 @@ public class KijijiScraperMain extends Application{
         
     }
     
-    public static void scrape() {
+    public static void scrape(SingleSelectionModel area, Toggle btype, Toggle cond, String min, String max) {
+        carsList = new ArrayList();
+        resultLinks = new ArrayList();
         
-        URL = buildURL("edmonton-area", "wagon", "used", 0, 4000);
+        System.out.println("Starting scrape...");
+        
+        URL = buildURL(area.selectedItemProperty().getValue().toString(), btype.toString(), cond.toString(), min, max);
         
         getLinksFromURL(URL);
         
@@ -205,7 +219,16 @@ public class KijijiScraperMain extends Application{
         //holds up on saving until all threads are done :)
         while (allThreadsDone(threadList)) {}
         
-        saveCarsCSV(filename);
+        FileChooser saveFileChooser = new FileChooser();
+        saveFileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
+        saveFileChooser.setTitle("Save CSV car info...");
+        saveFileChooser.setInitialFileName("name.csv");
+        
+        File saveFile = saveFileChooser.showSaveDialog(stage);
+        try {
+            filename = saveFile.getPath();
+            saveCarsCSV(filename);
+        } catch (NullPointerException e) {}
         
     }
     
@@ -298,7 +321,18 @@ public class KijijiScraperMain extends Application{
         }
     }
     
-    public static String buildURL(String area, String body, String condition, int min, int max) {
+    public static String buildURL(String area, String body, String condition, String minString, String maxString) {
+        
+        int min = 0;
+        try {
+            min = Integer.parseInt(minString);
+        } catch (NumberFormatException e){}
+        
+        int max = 0;
+        try {
+            max = Integer.parseInt(maxString);
+        } catch (NumberFormatException e) {}
+        
         String url;
         String areaCode = "edmonton"; //must have a default value
         String bodyCode = null;
@@ -318,7 +352,7 @@ public class KijijiScraperMain extends Application{
         }
         
         if (body != null) {
-            switch (body.toLowerCase()) {
+            switch (body.substring(body.indexOf("'")+1, body.indexOf("'", body.indexOf("'")+1)).toLowerCase()) {
                 case "wagon":
                     bodyCode = "wagon";
                     categoryCode += "a138";
@@ -326,7 +360,7 @@ public class KijijiScraperMain extends Application{
         }
         
         if (condition != null) {
-            switch (condition.toLowerCase()) {
+            switch (condition.substring(condition.indexOf("'")+1, condition.indexOf("'", condition.indexOf("'")+1)).toLowerCase()) {
                 case "used":
                     condCode = "used";
                     categoryCode += "a49";

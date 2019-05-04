@@ -109,7 +109,7 @@ public class Car {
                     soldByDealer = !priceCont.getElementsByClass("additionalTaxes-1130400051").isEmpty();
                     //System.out.println("SOLD BY DEALER : " + soldByDealer);
                 } catch (NullPointerException e) {
-                    System.out.println("Couldn't determine car seller" + e.getStackTrace());
+                    System.out.println("Couldn't determine car seller" + e.getStackTrace().toString());
                     soldByDealer = false;
                 }
                 
@@ -128,7 +128,7 @@ public class Car {
                     //error 404, car was sold
                     failed = false;
                 } else {
-                    System.out.println("Couldn't connect to website " + url + ", retrying...");
+                    System.out.println("(" + attempts + ")Couldn't connect to website " + url + ", retrying...");
                     failed = true;
                     attempts++;
                 }

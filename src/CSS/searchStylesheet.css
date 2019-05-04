@@ -130,4 +130,15 @@
 #searchButton {
     -fx-pref-width: 400px;
     -fx-font-size: 40px;
+    -fx-background-color: #373373;
+    -fx-text-fill: #dfdfdf;
+    -fx-background-radius: 20px;
+}
+
+#searchButton:hover {
+    -fx-background-color: #2B2759;
+}
+
+#searchButton:pressed {
+    -fx-background-color: #181633;
 }
