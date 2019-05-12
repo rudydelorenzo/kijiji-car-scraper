@@ -193,7 +193,13 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         
         System.out.println("Starting scrape...");
         
-        URL = buildURL(area.selectedItemProperty().getValue().toString(), btype.toString(), cond.toString(), min, max);
+        if (btype == null) {
+            URL = buildURL(area.selectedItemProperty().getValue().toString(), "none", cond.toString(), min, max);
+        } else {
+            URL = buildURL(area.selectedItemProperty().getValue().toString(), btype.toString().substring(btype.toString().indexOf("'")+1, btype.toString().indexOf("'", btype.toString().indexOf("'")+1)), cond.toString(), min, max);
+        }
+        
+        
         
         getLinksFromURL(URL);
         
@@ -228,6 +234,10 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         try {
             filename = saveFile.getPath();
             saveCarsCSV(filename);
+            Dialog completeDialog = new Dialog();
+            completeDialog.setContentText("Saving complete!");
+            completeDialog.setTitle("Save progress...");
+            completeDialog.showAndWait();
         } catch (NullPointerException e) {}
         
     }
@@ -352,7 +362,7 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         }
         
         if (body != null) {
-            switch (body.substring(body.indexOf("'")+1, body.indexOf("'", body.indexOf("'")+1)).toLowerCase()) {
+            switch (body.toLowerCase()) {
                 case "wagon":
                     bodyCode = "wagon";
                     categoryCode += "a138";
