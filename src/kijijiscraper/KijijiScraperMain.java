@@ -202,24 +202,13 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         resultsListView = new ListView();
         resultsListView.setItems(carsObservableList);
         resultsListView.setCellFactory(new Callback<ListView<Car>, ListCell<Car>>() {
-
             @Override
-            public ListCell<Car> call(ListView<Car> param) {
-                ListCell<Car> cell = new ListCell<Car>() {
-
-                    @Override
-                    protected void updateItem(Car item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item != null) {
-                           setText(item.model);
-                        }
-                    }
-                };
-                return cell;
+            public ListCell<Car> call(ListView<Car> lv) {
+                return new ResultCell();
             }
         });
         
-        resultsWrapper.getChildren().addAll(resultsListView);
+        resultsWrapper.getChildren().add(resultsListView);
         
         resultsBorderPane.setCenter(resultsWrapper);
         
