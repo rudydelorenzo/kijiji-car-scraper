@@ -11,11 +11,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -193,13 +195,18 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         
         System.out.println("Starting scrape...");
         
-        if (btype == null) {
-            URL = buildURL(area.selectedItemProperty().getValue().toString(), "none", cond.toString(), min, max);
+        String condString ;
+        if (cond == null) {
+            condString = "any";
         } else {
-            URL = buildURL(area.selectedItemProperty().getValue().toString(), btype.toString().substring(btype.toString().indexOf("'")+1, btype.toString().indexOf("'", btype.toString().indexOf("'")+1)), cond.toString(), min, max);
+            condString = cond.toString().substring(cond.toString().indexOf("'")+1, cond.toString().indexOf("'", cond.toString().indexOf("'")+1)).toLowerCase();
         }
         
-        
+        if (btype == null) {
+            URL = buildURL(area.selectedItemProperty().getValue().toString(), "none", condString, min, max);
+        } else {
+            URL = buildURL(area.selectedItemProperty().getValue().toString(), btype.toString().substring(btype.toString().indexOf("'")+1, btype.toString().indexOf("'", btype.toString().indexOf("'")+1)), condString, min, max);
+        }
         
         getLinksFromURL(URL);
         
@@ -369,10 +376,13 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
             }
         }
         
-        if (condition != null) {
-            switch (condition.substring(condition.indexOf("'")+1, condition.indexOf("'", condition.indexOf("'")+1)).toLowerCase()) {
+        if (!condition.equals("any")) {
+            switch (condition) {
                 case "used":
                     condCode = "used";
+                    categoryCode += "a49";
+                case "new":
+                    condCode = "new";
                     categoryCode += "a49";
             }
         }
