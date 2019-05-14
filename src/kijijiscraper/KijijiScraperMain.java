@@ -11,15 +11,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,6 +28,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class KijijiScraperMain extends Application implements EventHandler<ActionEvent>{
     
@@ -34,9 +36,10 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
     public static String filename = "wagonsunder4k.csv";
     public static ArrayList<String> resultLinks;
     public static ArrayList<Car> carsList;
+    public static ObservableList<Car> carsObservableList;
     public static Stage stage;
-    public static Scene searchScene;
-    public static BorderPane mainBorderPane;
+    public static Scene searchScene, resultsScene;
+    public static BorderPane mainBorderPane, resultsBorderPane;
     public static TextField minPriceField, maxPriceField;
     public static ComboBox locationComboBox;
     public static ToggleButton noneButton, usedButton, newButton;
@@ -47,6 +50,7 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
     public static Image bannerImage;
     public static ImageView bannerImageView;
     public static DropShadow dropShadow = new DropShadow(15, Color.BLACK);
+    public static ListView resultsListView;
     
     @Override
     public void start(Stage primaryStage) {
@@ -55,7 +59,6 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         
         makeSearchScene();
         
-        stage.setScene(searchScene);
         stage.setHeight(550);
         stage.setMinHeight(550);
         stage.setWidth(1100);
@@ -187,6 +190,41 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         bannerImageView.fitWidthProperty().bind(stage.widthProperty());
         bannerImageView.fitHeightProperty().bind(stage.heightProperty());
         
+        stage.setScene(searchScene);
+        
+    }
+    
+    public static void makeResultsScene() {
+        resultsBorderPane = new BorderPane();
+        VBox resultsWrapper = new VBox(8);
+        resultsWrapper.setPadding(new Insets(8));
+        carsObservableList = FXCollections.observableArrayList(carsList);
+        resultsListView = new ListView();
+        resultsListView.setItems(carsObservableList);
+        resultsListView.setCellFactory(new Callback<ListView<Car>, ListCell<Car>>() {
+
+            @Override
+            public ListCell<Car> call(ListView<Car> param) {
+                ListCell<Car> cell = new ListCell<Car>() {
+
+                    @Override
+                    protected void updateItem(Car item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                           setText(item.model);
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
+        
+        resultsWrapper.getChildren().addAll(resultsListView);
+        
+        resultsBorderPane.setCenter(resultsWrapper);
+        
+        resultsScene = new Scene(resultsBorderPane);
+        stage.setScene(resultsScene);
     }
     
     public static void scrape(SingleSelectionModel area, Toggle btype, Toggle cond, String min, String max) {
@@ -231,8 +269,10 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         
         //holds up on saving until all threads are done :)
         while (allThreadsDone(threadList)) {}
+                
+        makeResultsScene();
         
-        FileChooser saveFileChooser = new FileChooser();
+        /*FileChooser saveFileChooser = new FileChooser();
         saveFileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
         saveFileChooser.setTitle("Save CSV car info...");
         saveFileChooser.setInitialFileName("name.csv");
@@ -241,11 +281,11 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         try {
             filename = saveFile.getPath();
             saveCarsCSV(filename);
-            Dialog completeDialog = new Dialog();
-            completeDialog.setContentText("Saving complete!");
-            completeDialog.setTitle("Save progress...");
-            completeDialog.show();
-        } catch (NullPointerException e) {}
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Saving finished");
+            alert.setHeaderText("Saving successful!");
+            alert.showAndWait();
+        } catch (NullPointerException e) {}*/
         
     }
     
