@@ -85,12 +85,10 @@ public class Car {
                 } catch (NullPointerException e) {
                     if (page.select("div.expired-ad-container") != null) {
                         carSold = true;
+                        failed = true;
                         System.out.println("Car at " + url + " was sold!");
                     }
                 }
-                //assignOverviewArrayData(carData); 
-
-                //gotta change up how values are assigned. attribute and value will get fed into a method with a ton of if statements.
 
                 try {
 
@@ -126,11 +124,12 @@ public class Car {
             } catch(IOException e) {
                 if (e instanceof org.jsoup.HttpStatusException) {
                     //error 404, car was sold
-                    failed = false;
+                    failed = true;
                 } else {
-                    System.out.println("(" + attempts + ")Couldn't connect to website " + url + ", retrying...");
                     failed = true;
                     attempts++;
+                    System.out.println("(Attempt #" + (attempts) + ") Couldn't connect to website " + url + ", retrying...");
+                    
                 }
             }
         } while(attempts < 3 && failed);
@@ -225,6 +224,10 @@ public class Car {
         }
         
         return Integer.parseInt(new String(finalArray));
+    }
+    
+    public boolean hasFailed() {
+        return failed;
     }
     
 }

@@ -1,8 +1,9 @@
-@font-face {
-    src: url("Product-Sans-Regular.ttf");
+#titleText,
+#titleText:selected {
+    -fx-font-size: 30px;
 }
 
-#titleText {
-    -fx-font-family: "Product Sans";
-    -fx-font-size: 30px;
+#smallText,
+#smallText:selected {
+    -fx-font-size: 12px;
 }

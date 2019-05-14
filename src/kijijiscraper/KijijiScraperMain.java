@@ -1,6 +1,8 @@
 package kijijiscraper;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -37,6 +40,7 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
     public static ArrayList<String> resultLinks;
     public static ArrayList<Car> carsList;
     public static ObservableList<Car> carsObservableList;
+    public static Font productSansReg;
     public static Stage stage;
     public static Scene searchScene, resultsScene;
     public static BorderPane mainBorderPane, resultsBorderPane;
@@ -70,6 +74,11 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
     public static void main(String[] args) {
         //scrape();
         bannerImage = new Image("file:logo/mainBanner.png");
+        try {
+            productSansReg = Font.loadFont(new FileInputStream(new File("src/CSS/Product-Sans-Regular.ttf")), 100);
+        } catch (FileNotFoundException e) {
+            System.out.println("font loading failed");
+        }
         launch(args);
         
     }
@@ -182,6 +191,7 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         StackPane imageContainer = new StackPane(bannerImageView);
         imageContainer.setAlignment(Pos.CENTER);
         imageContainer.setStyle("-fx-background-color: #373373;");
+        imageContainer.setEffect(dropShadow);
         mainBorderPane.setTop(imageContainer);
         
         searchScene = new Scene(mainBorderPane);
@@ -196,8 +206,7 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
     
     public static void makeResultsScene() {
         resultsBorderPane = new BorderPane();
-        VBox resultsWrapper = new VBox(8);
-        resultsWrapper.setPadding(new Insets(8));
+        resultsBorderPane.setPadding(new Insets(8));
         carsObservableList = FXCollections.observableArrayList(carsList);
         resultsListView = new ListView();
         resultsListView.setItems(carsObservableList);
@@ -208,9 +217,7 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
             }
         });
         
-        resultsWrapper.getChildren().add(resultsListView);
-        
-        resultsBorderPane.setCenter(resultsWrapper);
+        resultsBorderPane.setCenter(resultsListView);
         
         resultsScene = new Scene(resultsBorderPane);
         stage.setScene(resultsScene);
@@ -258,7 +265,9 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
         
         //holds up on saving until all threads are done :)
         while (allThreadsDone(threadList)) {}
-                
+        
+        carsList = cleanList(carsList);
+        
         makeResultsScene();
         
         /*FileChooser saveFileChooser = new FileChooser();
@@ -456,5 +465,15 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
             if (currentThread.isAlive()) threadsRunning = true;
         }
         return threadsRunning;
+    }
+    
+    public static ArrayList cleanList(ArrayList<Car> list) {
+        for (int i = 0; i<list.size(); i++) {
+            if (list.get(i).hasFailed() || list.get(i).carSold) {
+                list.remove(i);
+                i--;
+            }
+        }
+        return list;
     }
 }
