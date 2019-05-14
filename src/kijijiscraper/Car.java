@@ -109,7 +109,7 @@ public class Car {
                     soldByDealer = !priceCont.getElementsByClass("additionalTaxes-1130400051").isEmpty();
                     //System.out.println("SOLD BY DEALER : " + soldByDealer);
                 } catch (NullPointerException e) {
-                    System.out.println("Couldn't determine car seller" + e.getStackTrace().toString());
+                    System.out.println("Couldn't determine car seller");
                     soldByDealer = false;
                 }
                 

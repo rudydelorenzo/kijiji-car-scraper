@@ -237,7 +237,7 @@ public class KijijiScraperMain extends Application implements EventHandler<Actio
             Dialog completeDialog = new Dialog();
             completeDialog.setContentText("Saving complete!");
             completeDialog.setTitle("Save progress...");
-            completeDialog.showAndWait();
+            completeDialog.show();
         } catch (NullPointerException e) {}
         
     }
