@@ -1,3 +1,4 @@
+![Banner](logo/mainBanner.png)
 # Kijiji Car Scraper (Java)
 A tool to scrape car data off Kijiji.ca and drop it into a `.csv` file
 
